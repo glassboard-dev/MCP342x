@@ -11,4 +11,4 @@ include_directories(src inc)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ../lib)
 
 # Create or our static library
-ADD_LIBRARY( mcp342x STATIC src/mcp342x.c src/mcp342x.h )
+ADD_LIBRARY( mcp342x STATIC src/mcp342x.c inc/mcp342x.h )

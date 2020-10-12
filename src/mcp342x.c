@@ -1,148 +1,92 @@
-#include <stdbool.h>
-#include <string.h>
-#include <math.h>
-#include "main.h"
-#include "MCP3428.h"
+/*! @file mcp342x.c
+ * @brief Driver source for the MCP342x 16-Bit, ADC C driver.
+ */
 
-#define MCP3428_ADDRESS_BASE        (0x6E)
-#define MCP3428_ADDRESS_WRITE       (MCP3428_ADDRESS_BASE << 1)
-#define MCP3428_ADDRESS_READ        ((MCP3428_ADDRESS_BASE << 1) | 0x01)
-#define MCP3428_VREF                (2.048)
-#define MCP3428_LSB_VAL             (0.0000625)
-#define MCP3428_SAMPLE_TIMEOUT_MS   (100)
+#include <stdint.h>
+#include <stdio.h>
+#include "mcp342x.h"
 
-// Thermistor equation values
-#define A_val   (0.0008972439213)
-#define B_val   (0.0002500990711)
-#define C_val   (0.0000001961752076)
-#define VREF    (3.3)
-#define RTOP    (30100)
+#define MAX_READ_RETRY  10
 
+mcp342x_return_code_t mcp342x_writeConfig(mcp342x_dev_t *dev) {
+    mcp342x_return_code_t ret = MCP342x_RET_OK;
 
-static bool _MCP3428_writeConfig(str_MCP3428_config configByte);
-static bool _MCP3428_sampleChannel(enum_MCP3428_channel ch);
-
-static MCP3428_InfoTypeDef *MCP3428_Info;
-static str_MCP3428_config MCP3428_DEFAULT_CONFIG =
-{
-    .bits.GAIN          = 0b00,
-    .bits.SAMPLE_RATE   = 0b10,
-    .bits.CONV_MODE     = 0b00,
-    .bits.CHANNEL       = 0b00,
-    .bits.READY         = 0b01
-};
-
-static bool _MCP3428_writeConfig(str_MCP3428_config configByte)
-{
-    bool status = true;
-
-    // Transmit our config byte to the device
-    if( HAL_OK != HAL_I2C_Master_Transmit(MCP3428_Info->hi2c, MCP3428_ADDRESS_WRITE, (uint8_t*)&configByte, 0x01, 100) )
-    {
-        status = false;
+    if( dev == NULL ) {
+        ret = MCP342x_RET_NULL_PTR;
     }
 
-    return status;
+    if( ret = MCP342x_RET_OK ) {
+        // Write the config to our device
+        ret = dev->intf.write((dev->intf.i2c_addr << 1), &dev->registers.bits.config.byte, 0x01);
+    }
+
+    return ret;
 }
 
-static bool _MCP3428_sampleChannel(enum_MCP3428_channel ch)
-{
-    bool status = true;
-    uint16_t outputCode = 0x0000;
-    uint32_t timeoutRef = 0x00;
+mcp342x_return_code_t mcp342x_sampleChannel(mcp342x_dev_t *dev, mcp342x_channel_enum ch) {
+    mcp342x_return_code_t ret = MCP342x_RET_OK;
+    uint8_t retry = 0;
 
-    // Make sure the RDY bit is set to 1 on the device.. (It will go to a zero when a conversion has been completed)
-    MCP3428_Info->registers.bits.CONFIG.bits.READY = 0b1;
-    // Set the desired channel in our config struct
-    MCP3428_Info->registers.bits.CONFIG.bits.CHANNEL = ch;
-    // Clear out the samples from the previous scan
-    MCP3428_Info->registers.bits.UPPER_DATA = 0x0000;
-    MCP3428_Info->registers.bits.LOWER_DATA = 0x0000;
-
-    // Write the config to the device
-    if( HAL_OK == HAL_I2C_Master_Transmit(MCP3428_Info->hi2c, MCP3428_ADDRESS_WRITE, (uint8_t *)&MCP3428_Info->registers.bits.CONFIG.byte, 0x01, 10) )
+    if( NULL == dev ) {
+        ret = MCP342x_RET_NULL_PTR;
+    }
+    else if( ch >= MCP342x_CH__MAX__ )
     {
-        // Store the current ticks and use it as a reference when
-        // calculating a timeout for reading an ADC sample
-        timeoutRef = HAL_GetTick();
+        ret = MCP342x_RET_INV_PARAM;
+    }
 
-        // No problem transmitting. Now read data from the device until the READY bit changes to a zero
-        while( MCP3428_Info->registers.bits.CONFIG.bits.READY != 0b0 )
-        {
-            if( HAL_OK != HAL_I2C_Master_Receive(MCP3428_Info->hi2c, MCP3428_ADDRESS_READ, (uint8_t *)MCP3428_Info->registers.bytes, 0x04, 10) )
-            {
-                // Error receiving data. Return false
-                status = false;
-                // Break out of the while loop. We had an error when receiving the data
+    if( MCP342x_RET_OK == ret ) {
+        // Make sure the RDY bit is set to 1 on the device.. (It will go to a zero when a conversion has been completed)
+        dev->registers.bits.config.bits.ready = 0b1;
+        // Set the desired channel in our config struct
+        dev->registers.bits.config.bits.channel = ch;
+        // Clear out the samples from the previous scan
+        dev->registers.bits.upper_data = 0x00;
+        dev->registers.bits.lower_data = 0x00;
+        // Clear out the previous results
+        dev->results->outputCode = 0x0000;
+        dev->results->voltage = 0.0;
+
+        // Write the channel config to the device
+        ret = mcp342x_writeConfig(dev);
+    }
+
+    if( MCP342x_RET_OK == ret ) {
+        // Keep reading and checking for the ready bit or until we max out
+        // on retries.
+        while( dev->registers.bits.config.bits.ready != 0b0 ) {
+            // Read the results
+            ret = dev->intf.read((dev->intf.i2c_addr << 1) | 0x01, dev->registers.bytes, 0x04);
+
+            if( ret != MCP342x_RET_OK ) {
+                // Something went wrong with our READ, break out and return.
                 break;
             }
-
-            if( (timeoutRef + MCP3428_SAMPLE_TIMEOUT_MS) < HAL_GetTick() )
-            {
-                // We've waited long enough for a conversion to complete. Return false
-                status = false;
+            else if( MAX_READ_RETRY >= retry ) {
+                // We exceeded our max number of retries.
+                // Return with a timeout errorcode
+                ret = MCP342x_RET_TIMEOUT;
                 break;
             }
-        }
+            else
+            {
+                // The ready bit isn't set.
+                // Increment the retry count.
+                retry++;
+            }
 
-        // We completed a conversion on that channel. Store the voltage, and converted temp values
-        if( status )
-        {
-            // Aggregate the upper and lower data into a single u16 output code
-            outputCode = MCP3428_Info->registers.bits.UPPER_DATA << 8 | MCP3428_Info->registers.bits.LOWER_DATA;
-            // Compute the voltage value
-            MCP3428_Info->results[ch].voltage = outputCode * MCP3428_LSB_VAL;
-            // Compute the actual temp value
-            MCP3428_Info->results[ch].temp = 1/ (A_val +
-                                                (B_val * log( (MCP3428_Info->results[ch].voltage * RTOP) / (VREF - MCP3428_Info->results[ch].voltage) ) ) +
-                                                (C_val *
-                                                pow(log( (MCP3428_Info->results[ch].voltage * RTOP) / (VREF - MCP3428_Info->results[ch].voltage) ), 3)));
-            // Calculated value is in Kelvin - subtract 273
-            MCP3428_Info->results[ch].temp -= 273;
-            // Convert to fahrenheit
-            MCP3428_Info->results[ch].temp = ((MCP3428_Info->results[ch].temp * 9) / 5) + 32;
-        }
-    }
-    else
-    {
-        status = false;
-    }
-
-    return status;
-}
-
-bool MCP3428_Init(MCP3428_InfoTypeDef *mcp3428, I2C_HandleTypeDef *hi2c)
-{
-    bool status = true;
-
-    // Store the reference for our I2C module
-    mcp3428->hi2c = hi2c;
-
-    // Give our high level app state struct reference to all of the DRV8703 info
-    MCP3428_Info = mcp3428;
-
-    // Copy our default config into our config struct
-    memcpy(&MCP3428_Info->registers.bits.CONFIG.byte, &MCP3428_DEFAULT_CONFIG, sizeof(MCP3428_DEFAULT_CONFIG));
-
-    // Write our default config to the device
-    status = _MCP3428_writeConfig(MCP3428_Info->registers.bits.CONFIG);
-
-    return status;
-}
-
-bool MCP3428_sampleAllChannels(void)
-{
-    bool status = true;
-
-    // Run through all of the channels on the ADC and sample them
-    for(uint8_t i = MCP3428_CH__MAX__; i > 0; i--)
-    {
-        if( false == _MCP3428_sampleChannel(i - 1) )
-        {
-            status = false;
-            break;
+            // Wait 10ms before checking for the ready bit
+            dev->intf.delay_us(10000);
         }
     }
 
-    return status;
+    if( MCP342x_RET_OK == ret ) {
+        // Create the 16-bit output code from the lower and upper results registers
+        dev->results->outputCode = (uint16_t)(dev->registers.bits.upper_data << 8) | dev->registers.bits.lower_data;
+        // Determine the sampled voltage from the output code
+        dev->results->voltage = dev->results->outputCode * MCP342x_LSB_VAL;
+    }
+
+    // Return our return code from retrieving a channel sample
+    return ret;
 }
