@@ -25,7 +25,6 @@ typedef enum {
     MCP342x_RET_TIMEOUT     = -3,
     MCP342x_RET_INV_PARAM   = -4,
     MCP342x_RET_NULL_PTR    = -5,
-    MCP342x_RET_INV_CONFIG  = -6,
 } mcp342x_return_code_t;
 
 typedef enum {

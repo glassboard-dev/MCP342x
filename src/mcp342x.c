@@ -12,7 +12,15 @@ mcp342x_return_code_t mcp342x_writeConfig(mcp342x_dev_t *dev) {
     mcp342x_return_code_t ret = MCP342x_RET_OK;
 
     if( dev == NULL ) {
+        // The pointer to the mcp342x dev is NULL
         ret = MCP342x_RET_NULL_PTR;
+    }
+
+    if( (dev->registers.bits.config.bits.conv_mode >= MCP342x_CM__MAX__) ||
+        (dev->registers.bits.config.bits.gain >= MCP342x_GAIN__MAX__) ||
+        (dev->registers.bits.config.bits.sample_rate >= MCP342x_SR__MAX__) ) {
+        // One of the config values provideed to use is not valid.
+        ret = MCP342x_RET_INV_PARAM;
     }
 
     if( ret = MCP342x_RET_OK ) {
