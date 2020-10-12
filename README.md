@@ -9,6 +9,7 @@ To include the driver as a git submodule
 ```bash
 $ cd ./${DIR_WHERE_YOU_WANT_TO_ADD_THE_MODULE}
 $ git submodule add https://github.com/glassboard-dev/MCP342x
+```
 
 ## Integration
 #### Creating & Linking against a static library
