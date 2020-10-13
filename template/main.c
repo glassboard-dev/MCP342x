@@ -54,7 +54,7 @@ int main(void) {
         ret = mcp342x_sampleChannel(&dev, MCP342x_CH_1);
 
         if( MCP342x_RET_OK == ret ) {
-            printf("CH1_raw: %d \t CH1_V: %0.2fV", dev.results->outputCode, dev.results->voltage);
+            printf("CH1_raw: %d \t CH1_V: %0.2fV", dev.results[MCP342x_CH_1].outputCode, dev.results[MCP342x_CH_1].voltage);
         }
     }
 
