@@ -6,8 +6,11 @@
 #include <stdio.h>
 #include "mcp342x.h"
 
-#define MAX_READ_RETRY  10
+#define MAX_READ_RETRY  10 /*! @brief Max number of retries before giving up on sampling the specificed channel */
 
+/*!
+ * @brief This API writes the current config to the device
+ */
 mcp342x_return_code_t mcp342x_writeConfig(mcp342x_dev_t *dev) {
     mcp342x_return_code_t ret = MCP342x_RET_OK;
 
@@ -31,6 +34,9 @@ mcp342x_return_code_t mcp342x_writeConfig(mcp342x_dev_t *dev) {
     return ret;
 }
 
+/*!
+ * @brief This API samples the specified channel
+ */
 mcp342x_return_code_t mcp342x_sampleChannel(mcp342x_dev_t *dev, const mcp342x_channel_enum ch) {
     mcp342x_return_code_t ret = MCP342x_RET_OK;
     uint8_t retry = 0;
