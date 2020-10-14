@@ -101,7 +101,7 @@ typedef struct
 } mcp342x_dev_t;
 
 mcp342x_return_code_t mcp342x_writeConfig(mcp342x_dev_t *dev);
-mcp342x_return_code_t mcp342x_sampleChannel(mcp342x_dev_t *dev, mcp342x_channel_enum ch);
+mcp342x_return_code_t mcp342x_sampleChannel(mcp342x_dev_t *dev, const mcp342x_channel_enum ch);
 
 #endif // _MCP342X_H_
 
