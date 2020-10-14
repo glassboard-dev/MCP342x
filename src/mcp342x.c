@@ -23,7 +23,7 @@ mcp342x_return_code_t mcp342x_writeConfig(mcp342x_dev_t *dev) {
         ret = MCP342x_RET_INV_PARAM;
     }
 
-    if( ret = MCP342x_RET_OK ) {
+    if( ret == MCP342x_RET_OK ) {
         // Write the config to our device
         ret = dev->intf.write((dev->intf.i2c_addr << 1), &dev->registers.bits.config.byte, 0x01);
     }
@@ -70,7 +70,7 @@ mcp342x_return_code_t mcp342x_sampleChannel(mcp342x_dev_t *dev, const mcp342x_ch
                 // Something went wrong with our READ, break out and return.
                 break;
             }
-            else if( MAX_READ_RETRY >= retry ) {
+            else if( retry >= MAX_READ_RETRY) {
                 // We exceeded our max number of retries.
                 // Return with a timeout errorcode
                 ret = MCP342x_RET_TIMEOUT;
