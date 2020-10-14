@@ -37,7 +37,7 @@ mcp342x_return_code_t mcp342x_writeConfig(mcp342x_dev_t *dev) {
 /*!
  * @brief This API samples the specified channel
  */
-mcp342x_return_code_t mcp342x_sampleChannel(mcp342x_dev_t *dev, mcp342x_channel_enum ch) {
+mcp342x_return_code_t mcp342x_sampleChannel(mcp342x_dev_t *dev, const mcp342x_channel_enum ch) {
     mcp342x_return_code_t ret = MCP342x_RET_OK;
     uint8_t retry = 0;
 
@@ -58,8 +58,8 @@ mcp342x_return_code_t mcp342x_sampleChannel(mcp342x_dev_t *dev, mcp342x_channel_
         dev->registers.bits.upper_data = 0x00;
         dev->registers.bits.lower_data = 0x00;
         // Clear out the previous results
-        dev->results->outputCode = 0x0000;
-        dev->results->voltage = 0.0;
+        dev->results[ch].outputCode = 0x0000;
+        dev->results[ch].voltage = 0.0;
 
         // Write the channel config to the device
         ret = mcp342x_writeConfig(dev);
@@ -96,9 +96,9 @@ mcp342x_return_code_t mcp342x_sampleChannel(mcp342x_dev_t *dev, mcp342x_channel_
 
     if( MCP342x_RET_OK == ret ) {
         // Create the 16-bit output code from the lower and upper results registers
-        dev->results->outputCode = (uint16_t)(dev->registers.bits.upper_data << 8) | dev->registers.bits.lower_data;
+        dev->results[ch].outputCode = (uint16_t)(dev->registers.bits.upper_data << 8) | dev->registers.bits.lower_data;
         // Determine the sampled voltage from the output code
-        dev->results->voltage = dev->results->outputCode * MCP342x_LSB_VAL;
+        dev->results[ch].voltage = dev->results[ch].outputCode * MCP342x_LSB_VAL;
     }
 
     // Return our return code from retrieving a channel sample
