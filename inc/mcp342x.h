@@ -61,11 +61,11 @@ typedef enum {
  * @brief MCP342x ADC Channels
  */
 typedef enum {
-    MCP342x_CH_1            = 0,    /* Channel 1 */
-    MCP342x_CH_2            = 1,    /* Channel 2 */
-    MCP342x_CH_3            = 2,    /* Channel 3 */
-    MCP342x_CH_4            = 3,    /* Channel 4 */
-    MCP342x_CH__MAX__               /* Channel MAX */
+    MCP342x_CH_1            = 0x00, /* Channel 1 */
+    MCP342x_CH_2            = 0x01, /* Channel 2 */
+    MCP342x_CH_3            = 0x02, /* Channel 3 */
+    MCP342x_CH_4            = 0x03, /* Channel 4 */
+    MCP342x_CH__MAX__       = 0x04  /* Channel MAX */
 } mcp342x_channel_enum;
 
 /*!
@@ -74,7 +74,7 @@ typedef enum {
 typedef enum {
     MCP342x_CM_ONE_SHOT     = 0x00, /* One Shot Conversion */
     MCP342x_CM_CONT         = 0x01, /* Continuous Conversion */
-    MCP342x_CM__MAX__               /* Conversion Mode Max */
+    MCP342x_CM__MAX__       = 0x02, /* Conversion Mode Max */
 } mcp342x_conversion_mode_enum;
 
 /*!
@@ -84,7 +84,8 @@ typedef enum {
     MCP342x_SR_240SPS       = 0x00, /* 240 Samples Per Second */
     MCP342x_SR_60SPS        = 0x01, /* 60 Samples Per Second */
     MCP342x_SR_15SPS        = 0x02, /* 15 Samples Per Second */
-    MCP342x_SR__MAX__               /* Sample Rate Max */
+    MCP342x_SR_3_75SPS      = 0x03, /* 3.75 Samples Per Second */
+    MCP342x_SR__MAX__       = 0x04, /* Sample Rate Max */
 } mcp342x_sample_rate_enum;
 
 /*!
@@ -95,7 +96,7 @@ typedef enum {
     MCP342x_GAIN_x2         = 0x01, /* 2x Gain */
     MCP342x_GAIN_x4         = 0x02, /* 4x Gain */
     MCP342x_GAIN_x8         = 0x03, /* 8x Gain */
-    MCP342x_GAIN__MAX__             /* Gain Max */
+    MCP342x_GAIN__MAX__     = 0x04, /* Gain Max */
 } mcp342x_gain_enum;
 
 /*!

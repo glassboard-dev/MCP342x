@@ -26,6 +26,12 @@ The output library (libmcp342x.a) can be found in the **lib/** folder. Link agai
 #include "mcp342x.h"
 ```
 
+## Testing
+To test the source this submodule uses Ceedling, Unity and Gcov to run unit tests and generate HTML reports. You will need to install the following to run Unit Tests.
+- [Ruby](https://www.ruby-lang.org/en/)
+- [Ceedling](http://www.throwtheswitch.org/ceedling)
+- [Gcovr](https://gcovr.com/en/stable/installation.html)
+
 #### Adding to your own source/project
 The other option for integrating the source into your project, is to include everything directly into your project
 * Set your include directories to include the driver inc/ folder.

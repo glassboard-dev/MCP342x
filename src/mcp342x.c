@@ -14,9 +14,10 @@
 mcp342x_return_code_t mcp342x_writeConfig(mcp342x_dev_t *dev) {
     mcp342x_return_code_t ret = MCP342x_RET_OK;
 
-    if( dev == NULL ) {
+    if( (dev == NULL) || (dev->intf.write == NULL) ) {
         // The pointer to the mcp342x dev is NULL
         ret = MCP342x_RET_NULL_PTR;
+        goto EXIT;
     }
 
     if( (dev->registers.bits.config.bits.conv_mode >= MCP342x_CM__MAX__) ||
@@ -24,6 +25,7 @@ mcp342x_return_code_t mcp342x_writeConfig(mcp342x_dev_t *dev) {
         (dev->registers.bits.config.bits.sample_rate >= MCP342x_SR__MAX__) ) {
         // One of the config values provideed to use is not valid.
         ret = MCP342x_RET_INV_PARAM;
+        goto EXIT;
     }
 
     if( ret == MCP342x_RET_OK ) {
@@ -31,6 +33,7 @@ mcp342x_return_code_t mcp342x_writeConfig(mcp342x_dev_t *dev) {
         ret = dev->intf.write((dev->intf.i2c_addr << 1), &dev->registers.bits.config.byte, 0x01);
     }
 
+EXIT:
     return ret;
 }
 
@@ -41,12 +44,14 @@ mcp342x_return_code_t mcp342x_sampleChannel(mcp342x_dev_t *dev, const mcp342x_ch
     mcp342x_return_code_t ret = MCP342x_RET_OK;
     uint8_t retry = 0;
 
-    if( NULL == dev ) {
+    if( (NULL == dev) || (NULL == dev->intf.read) || (NULL == dev->intf.write) || (NULL == dev->intf.delay_us) ) {
         ret = MCP342x_RET_NULL_PTR;
+        goto EXIT;
     }
     else if( ch >= MCP342x_CH__MAX__ )
     {
         ret = MCP342x_RET_INV_PARAM;
+        goto EXIT;
     }
 
     if( MCP342x_RET_OK == ret ) {
@@ -101,6 +106,7 @@ mcp342x_return_code_t mcp342x_sampleChannel(mcp342x_dev_t *dev, const mcp342x_ch
         dev->results[ch].voltage = dev->results[ch].outputCode * MCP342x_LSB_VAL;
     }
 
+EXIT:
     // Return our return code from retrieving a channel sample
     return ret;
 }

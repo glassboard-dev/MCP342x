@@ -23,3 +23,5 @@ jobs:
       run: cd template/build && cmake ..
     - name: Build Demo
       run: cd template/build && make
+    - name: Run Unit tests
+      run: cd build && make tests
