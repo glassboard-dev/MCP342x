@@ -44,20 +44,20 @@ $ cmake ..
 $ make
 ```
 
-#### Testing
+## Testing
 To test the source this submodule uses Ceedling, Unity and Gcov to run unit tests and generate HTML reports. You will need to install the following to run Unit Tests.
 - [Ruby](https://www.ruby-lang.org/en/)
 - [Ceedling](http://www.throwtheswitch.org/ceedling)
 - [Gcovr](https://gcovr.com/en/stable/installation.html)
 
-To execut the tests:
+To execute the tests:
 ```bash
 $ mkdir build && cd build
 $ cmake ..
 $ make tests
 ```
 
-#### Example application
+## Example application
 Example application and main can be found below:
 ```C
 #include <stdint.h>
