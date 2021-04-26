@@ -50,40 +50,62 @@ void usr_delay_us(uint32_t period) {
 
 void test_mcp342x_writeConfig_NullDevice(void)
 {
-    TEST_ASSERT_EQUAL_INT(MCP342x_RET_NULL_PTR, mcp342x_writeConfig(NULL));
+    mcp342x_return_code_t ret =  mcp342x_writeConfig(NULL);
+
+    TEST_ASSERT_EQUAL_INT(MCP342x_RET_NULL_PTR, ret);
 }
 
 void test_mcp342x_writeConfig_NullWriteIntf(void)
 {
+    mcp342x_return_code_t ret;
     mcp342x_device.intf.write = NULL;
-    TEST_ASSERT_EQUAL_INT(MCP342x_RET_NULL_PTR, mcp342x_writeConfig(&mcp342x_device));
+
+    ret = mcp342x_writeConfig(&mcp342x_device);
+
+    TEST_ASSERT_EQUAL_INT(MCP342x_RET_NULL_PTR, ret);
 }
 
 void test_mcp342x_sampleChannel_NullDevice(void)
 {
-    TEST_ASSERT_EQUAL_INT(MCP342x_RET_NULL_PTR, mcp342x_writeConfig(NULL));
+    mcp342x_return_code_t ret = mcp342x_sampleChannel(NULL, 0);
+
+    TEST_ASSERT_EQUAL_INT(MCP342x_RET_NULL_PTR, ret);
 }
 
 void test_mcp342x_sampleChannel_NullWriteIntf(void)
 {
+    mcp342x_return_code_t ret;
     mcp342x_device.intf.write = NULL;
-    TEST_ASSERT_EQUAL_INT(MCP342x_RET_NULL_PTR, mcp342x_sampleChannel(&mcp342x_device, 0));
+
+    ret = mcp342x_sampleChannel(&mcp342x_device, 0);
+
+    TEST_ASSERT_EQUAL_INT(MCP342x_RET_NULL_PTR, ret);
 }
 
 void test_mcp342x_sampleChannel_NullReadIntf(void)
 {
+    mcp342x_return_code_t ret;
     mcp342x_device.intf.read = NULL;
-    TEST_ASSERT_EQUAL_INT(MCP342x_RET_NULL_PTR, mcp342x_sampleChannel(&mcp342x_device, 0));
+
+    ret = mcp342x_sampleChannel(&mcp342x_device, 0);
+
+    TEST_ASSERT_EQUAL_INT(MCP342x_RET_NULL_PTR, ret);
 }
 
 void test_mcp342x_sampleChannel_NullDelayIntf(void)
 {
+    mcp342x_return_code_t ret;
     mcp342x_device.intf.delay_us = NULL;
-    TEST_ASSERT_EQUAL_INT(MCP342x_RET_NULL_PTR, mcp342x_sampleChannel(&mcp342x_device, 0));
+
+    ret =  mcp342x_sampleChannel(&mcp342x_device, 0);
+
+    TEST_ASSERT_EQUAL_INT(MCP342x_RET_NULL_PTR, ret);
 }
 
 void test_mcp342x_sampleChannel_InvalidChannel(void)
 {
-    TEST_ASSERT_EQUAL_INT(MCP342x_RET_INV_PARAM, mcp342x_sampleChannel(&mcp342x_device, MCP342x_CH__MAX__));
+    mcp342x_return_code_t ret = mcp342x_sampleChannel(&mcp342x_device, MCP342x_CH__MAX__);
+
+    TEST_ASSERT_EQUAL_INT(MCP342x_RET_INV_PARAM, ret);
 }
 
