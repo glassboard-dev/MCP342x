@@ -17,7 +17,7 @@ jobs:
         mkdir template/build
     - name: Install Ruby & Ceedling
       run:  |
-        apt install ruby
+        sudo apt-get install ruby
         gem install ceedling
         python -m pip install gcovr
     - name: Configure Lib CMake
