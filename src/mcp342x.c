@@ -36,12 +36,10 @@ mcp342x_return_code_t mcp342x_sampleChannel(mcp342x_dev_t *dev, const mcp342x_ch
 
     if( (NULL == dev) || (NULL == dev->intf.read) || (NULL == dev->intf.write) || (NULL == dev->intf.delay_us) ) {
         ret = MCP342x_RET_NULL_PTR;
-        goto EXIT;
     }
     else if( ch >= MCP342x_CH__MAX__ )
     {
         ret = MCP342x_RET_INV_PARAM;
-        goto EXIT;
     }
 
     if( MCP342x_RET_OK == ret ) {
@@ -96,7 +94,6 @@ mcp342x_return_code_t mcp342x_sampleChannel(mcp342x_dev_t *dev, const mcp342x_ch
         dev->results[ch].voltage = dev->results[ch].outputCode * MCP342x_LSB_VAL;
     }
 
-EXIT:
     // Return our return code from retrieving a channel sample
     return ret;
 }
