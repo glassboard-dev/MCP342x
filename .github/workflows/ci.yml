@@ -30,3 +30,10 @@ jobs:
       run: cd template/build && make
     - name: Run Unit tests
       run: cd build && make tests
+    - uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_MCP342X_TOKEN }}
+        name: CodeCov-MCP342x # optional
+        directory: build
+        fail_ci_if_error: true # optional (default = false)
+        verbose: true # optional (default = false)

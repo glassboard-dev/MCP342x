@@ -17,15 +17,6 @@ mcp342x_return_code_t mcp342x_writeConfig(mcp342x_dev_t *dev) {
     if( (dev == NULL) || (dev->intf.write == NULL) ) {
         // The pointer to the mcp342x dev is NULL
         ret = MCP342x_RET_NULL_PTR;
-        goto EXIT;
-    }
-
-    if( (dev->registers.bits.config.bits.conv_mode >= MCP342x_CM__MAX__) ||
-        (dev->registers.bits.config.bits.gain >= MCP342x_GAIN__MAX__) ||
-        (dev->registers.bits.config.bits.sample_rate >= MCP342x_SR__MAX__) ) {
-        // One of the config values provideed to use is not valid.
-        ret = MCP342x_RET_INV_PARAM;
-        goto EXIT;
     }
 
     if( ret == MCP342x_RET_OK ) {
@@ -33,7 +24,6 @@ mcp342x_return_code_t mcp342x_writeConfig(mcp342x_dev_t *dev) {
         ret = dev->intf.write((dev->intf.i2c_addr << 1), &dev->registers.bits.config.byte, 0x01);
     }
 
-EXIT:
     return ret;
 }
 
