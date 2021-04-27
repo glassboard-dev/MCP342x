@@ -12,3 +12,6 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ../lib)
 
 # Create or our static library
 ADD_LIBRARY( mcp342x STATIC src/mcp342x.c inc/mcp342x.h )
+
+# Add a custom target for our unit tests
+add_custom_target(tests cd ../ && ceedling gcov:all utils:gcov)
