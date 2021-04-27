@@ -1,4 +1,5 @@
 # MCP342x Multi-Channel, 16-Bit, Analog to Digital Converter
+[![codecov](https://codecov.io/gh/glassboard-dev/MCP342x/branch/master/graph/badge.svg?token=O8GFCPCA2J)](https://codecov.io/gh/glassboard-dev/MCP342x)
 
 C Driver for the MCP342xMulti-Channel, 16-Bit, Analog to Digital Converter IC. This driver can be included directly into a developers source or a static library can be created and then linked against. Development is done on the **develop** branch, and official releases can be found on the **master** branch.
 
