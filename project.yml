@@ -70,8 +70,13 @@
 # You will need to have gcov and gcovr both installed to make it work.
 # For more information on these options, see docs in plugins/gcov
 :gcov:
+  :utilities:
+    - gcovr
   :reports:
+    - HtmlBasic
     - HtmlDetailed
+    - Xml
+  :xml_report: true
   :gcovr:
     :html_medium_threshold: 75
     :html_high_threshold: 90
