@@ -34,6 +34,6 @@ jobs:
       with:
         token: ${{ secrets.CODECOV_MCP342X_TOKEN }}
         name: CodeCov-MCP342x # optional
-        directory: build
+        directory: "./build/artifacts/gcov"
         fail_ci_if_error: true # optional (default = false)
         verbose: true # optional (default = false)
