@@ -14,7 +14,6 @@ jobs:
     steps:
       - uses: rymndhng/release-on-push-action@master
         with:
-<<<<<<< HEAD
           bump_version_scheme: minor
       - uses: codecov/codecov-action@v1
         with:
@@ -23,6 +22,3 @@ jobs:
           files: ./build/artifacts/gcov/GcovCoverageCobertura.xml
           fail_ci_if_error: true # optional (default = false)
           verbose: true # optional (default = false)
-=======
-          bump_version_scheme: minor
->>>>>>> master
