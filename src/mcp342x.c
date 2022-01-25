@@ -91,7 +91,24 @@ mcp342x_return_code_t mcp342x_sampleChannel(mcp342x_dev_t *dev, const mcp342x_ch
         // Create the 16-bit output code from the lower and upper results registers
         dev->results[ch].outputCode = (uint16_t)(dev->registers.bits.upper_data << 8) | dev->registers.bits.lower_data;
         // Determine the sampled voltage from the output code
-        dev->results[ch].voltage = dev->results[ch].outputCode * MCP342x_LSB_VAL;
+        switch (dev->registers.bits.config.bits.sample_rate ) {
+            case MCP342x_SR_240SPS:
+                dev->results[ch].voltage = dev->results[ch].outputCode * MCP342x_240_SPS_LSB_VAL;
+                break;
+
+            case MCP342x_SR_60SPS:
+                dev->results[ch].voltage = dev->results[ch].outputCode * MCP342x_60_SPS_LSB_VAL;
+                break;
+
+            case MCP342x_SR_15SPS:
+                dev->results[ch].voltage = dev->results[ch].outputCode * MCP342x_15_SPS_LSB_VAL;
+                break;
+
+            default:
+                dev->results[ch].voltage = 0.0;
+                break;
+        }
+
     }
 
     // Return our return code from retrieving a channel sample

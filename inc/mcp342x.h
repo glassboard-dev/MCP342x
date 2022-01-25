@@ -12,7 +12,9 @@ extern "C" {
 #include <stdint.h>
 #include <stdbool.h>
 
-#define MCP342x_LSB_VAL (0.0000625) /*! @brief LSB Value in Volts of a sampled output code */
+#define MCP342x_15_SPS_LSB_VAL  (0.0000625) /*! @brief LSB Value in Volts of a sampled output code at 16bit resolution */
+#define MCP342x_60_SPS_LSB_VAL  (0.00025)   /*! @brief LSB Value in Volts of a sampled output code at 14bit resolution */
+#define MCP342x_240_SPS_LSB_VAL (0.001)     /*! @brief LSB Value in Volts of a sampled output code at 12bit resolution */
 
 /*!
  * @brief This function pointer API reads I2C data from the specified
@@ -84,7 +86,6 @@ typedef enum {
     MCP342x_SR_240SPS       = 0x00, /* 240 Samples Per Second */
     MCP342x_SR_60SPS        = 0x01, /* 60 Samples Per Second */
     MCP342x_SR_15SPS        = 0x02, /* 15 Samples Per Second */
-    MCP342x_SR_3_75SPS      = 0x03, /* 3.75 Samples Per Second */
     MCP342x_SR__MAX__       = 0x04, /* Sample Rate Max */
 } mcp342x_sample_rate_enum;
 
